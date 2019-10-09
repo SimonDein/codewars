@@ -13,60 +13,79 @@ array = [[1,2,3],
          [7,6,5]]
 snail(array) #=> [1,2,3,4,5,6,7,8,9]
 
-=== PEDAC ===
-=P
-Input: 2D array
-Output: 1D array
-
-=D
-We want to keep input as arrays.
-Use a loop along with 4 trackers for the boudries on the x and y axis
-
-=Algorithm
-- Loop until every index of all arrays has been visited
-  - go currentDirection till you hit boundry and add all elements visited to new array
 */
 
+const DIRECTIONS = ['right', 'down', 'left', 'up'];
+
 function snail(square) {
-  if (square[0][0] === undefined) return []; // return empty array if empty input
+  if (square.length < 2) return square[0];
   
   let numOfIndexes = square.length ** 2;
   let snailArray = [];
+  let direction = 'right';
+  let xMax = square.length - 1;
+  let yMax = square.length - 1;
+  let xMin = 0;
+  let yMin = 0;
   let x = 0;
   let y = 0;
-  
-  snailArray.push(square[y][x]); // push first element to avoid computeCoordinates error
-  
-  for(let count = 0; count < numOfIndexes; count += 1) {
-    computeCoordinates()
+
+  snailArray.push(square[y][x]);
+
+  for(let count = 1; count < numOfIndexes; count += 1) {
+    if(isBoundry()) {
+      updateBoundries();
+      changeDirection();
+    }
+
+    goCurrentDirection();
     snailArray.push(square[y][x]);
   }
-  
-  let xMax = square.length;
-  let yMax = square.length;
-  let direction = 'right';
-  
-  function computeCoordinates() {
-    switch (direction) {
-      case 'right':
-        x += 1;
-        if (isBoundry(y, x)) {
-          x -= 1;
-          
-        }
-        ;
-        break;
+
+  function goCurrentDirection() {
+    if (direction === 'right') {
+      x += 1;
+    } else if (direction === 'down') {
+      y += 1;
+    } else if (direction === 'left') {
+      x -= 1;
+    } else if (direction === 'up') {
+      y -= 1;
     }
   }
 
+  function updateBoundries() {
+    if (direction === 'right') {
+      yMin += 1
+    } else if (direction === 'down') {
+      xMax -= 1;
+    } else if (direction === 'left') {
+      yMax -= 1;
+    } else if (direction === 'up') {
+      xMin += 1;
+    }
+  }
+
+  function changeDirection() {
+    let newDirection = DIRECTIONS[DIRECTIONS.indexOf(direction) + 1];
+    if (newDirection === undefined) newDirection = 'right';
+    direction = newDirection;
+  }
+  
+  function isBoundry() {
+    return direction === 'right' && x === xMax ||
+           direction === 'down' && y === yMax ||
+           direction === 'left' && x === xMin ||
+           direction === 'up' && y === yMin;
+  }
+  
   return snailArray;
 }
 
 
 
 // TESTS
-console.log(snail([[]]) === []);
-console.log(snail([[1]]) === [1]);
-console.log(snail([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) === [1, 2, 3, 6, 9, 8, 7, 4, 5]);
-console.log(snail([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15], [16, 17, 18, 19, 20], [21, 22, 23, 24, 25]]) === [1, 2, 3, 4, 5, 10, 15, 20, 25, 24, 23, 22, 21, 16, 11, 6, 7, 8, 9, 14, 19, 18, 17, 12, 13]);
-console.log(snail([[1, 2, 3, 4, 5, 6], [20, 21, 22, 23, 24, 7], [19, 32, 33, 34, 25, 8], [18, 31, 36, 35, 26, 9], [17, 30, 29, 28, 27, 10], [16, 15, 14, 13, 12, 11]]) === [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]);
+console.log(snail([[]]));
+console.log(snail([[1]]));
+console.log(snail([[1, 2, 3], [4, 5, 6], [7, 8, 9]]));
+console.log(snail([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15], [16, 17, 18, 19, 20], [21, 22, 23, 24, 25]]));
