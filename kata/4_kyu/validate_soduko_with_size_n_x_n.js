@@ -31,6 +31,8 @@
   - Board is N x N
 - Numbers are valid
   - For each num
+    - if invalidNum(num): num >= 1 && num <= N
+      - return false
     - if notUniqueRow(num) || notUniqueColumn(num) || notUniqueSquare(num)
       - return false
     
@@ -38,19 +40,57 @@
 
 */
 
-var Sudoku = function(data) 
-{
+var Sudoku = function(data) {
   //   Private methods
   // -------------------------
+  function invalidBoard() {
+    let rowLength = data[0].length;
+    if (rowLength % 2 === 0 || rowLength % 3 === 0) {
+      return data.length !== rowLength || data.some((row) => row.length !== rowLength);
+    } else return true;
+  }
 
+  function uniqueRow(number, arr) {
+    return arr.filter((n) => n === number).length === 1;
+  }
+
+  function uniqueColumn(number, columnIndex) {
+    let column = data.map((arr) => arr[columnIndex]);
+    return uniqueRow(number, column);
+  }
+
+  function uniqueSquare(number, rowI, columnI) {
+    let rowLength = data.length;
+    let squareSize = rowLength % 3 === 0 ? 3 : 2;
+    let squareNumbers = data.filter(function (rows) {
+      rows.
+    });
+  }
+
+  function invalidNumbers() {
+    for(let rowI = 0; rowI < data.length; rowI += 1) {
+      let row = data[rowI];
+      
+      for(let i = 0; i < row.length; i += 1) {
+        let number = row[i];
+        if (!uniqueRow(number, row)      ||
+            !uniqueColumn(number, i)     ||
+            !uniqueSquare(number, rowI, i)) {
+           return true;
+         }
+      }
+      
+    }
+
+    return false;
+  }
 
 
   //   Public methods
   // -------------------------
   return {
     isValid: function() {
-      let row
-        for(let rowI = 0; rowI < data)
+      if (invalidBoard() || invalidNumbers()) return false;
       return true;
     }
   };
