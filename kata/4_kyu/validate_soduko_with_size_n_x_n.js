@@ -50,41 +50,23 @@ var Sudoku = function(data) {
     } else return true;
   }
 
-  function uniqueRow(number, arr) {
-    return arr.filter((n) => n === number).length === 1;
+  function getColumns() {
+    let columns = data[0].map((_) => []);
+    data.forEach((row) => row.forEach((number, index) => columns[index].push(number)));
+    return columns;
   }
 
-  function uniqueColumn(number, columnIndex) {
-    let column = data.map((arr) => arr[columnIndex]);
-    return uniqueRow(number, column);
-  }
-
-  function uniqueSquare(number, rowI, columnI) {
-    let rowLength = data.length;
-    let squareSize = rowLength % 3 === 0 ? 3 : 2;
-    let squareNumbers = data.filter(function (rows) {
-      rows.
-    });
+  function getSquares() {
+    // to be continued
   }
 
   function invalidNumbers() {
-    for(let rowI = 0; rowI < data.length; rowI += 1) {
-      let row = data[rowI];
-      
-      for(let i = 0; i < row.length; i += 1) {
-        let number = row[i];
-        if (!uniqueRow(number, row)      ||
-            !uniqueColumn(number, i)     ||
-            !uniqueSquare(number, rowI, i)) {
-           return true;
-         }
-      }
-      
-    }
+    let rows = data;
+    let columns = getColumns();
+    let squares = getSquares();
 
     return false;
   }
-
 
   //   Public methods
   // -------------------------
