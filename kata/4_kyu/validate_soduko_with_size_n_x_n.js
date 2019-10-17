@@ -26,28 +26,23 @@
 /*
 = Algorithm
 
-- Board format is valid
-  - N % 3 === 0 || N % 2 === 0
-  - Board is N x N
-- Numbers are valid
-  - For each num
-    - if invalidNum(num): num >= 1 && num <= N
-      - return false
-    - if notUniqueRow(num) || notUniqueColumn(num) || notUniqueSquare(num)
-      - return false
-    
-  - return true;
-
+- return false if invalidInput
+  - return true if anything but integers in Matrix
+  - return true if boardDimensionsInvalid
+- return false if 
 */
 
 var Sudoku = function(data) {
   //   Private methods
   // -------------------------
-  function invalidBoard() {
+  function validBoardDimensions() {
     let rowLength = data[0].length;
-    if (rowLength % 2 === 0 || rowLength % 3 === 0) {
-      return data.length !== rowLength || data.some((row) => row.length !== rowLength);
-    } else return true;
+    if (!Number.isInteger(Math.sqrt(rowLength))) return false;
+    return data.length === rowLength && data.every((row) => row.length === rowLength);
+  }
+
+  function validValues() {
+    return data.every((row) => row.every((val) => Number.isInteger(val) && val >= 1 && val <= data.length));
   }
 
   function getColumns() {
@@ -57,23 +52,39 @@ var Sudoku = function(data) {
   }
 
   function getSquares() {
-    // to be continued
+    let squares = data.map((_) => []);
+    let squareSize = Math.sqrt(data.length);
+
+    let squareIndex;
+    data.forEach((row, rowI) => row.forEach(function (num, colI) {
+      squareIndex = Math.floor(colI / squareSize) + (squareSize * Math.floor(rowI / squareSize));
+      squares[squareIndex].push(num);
+    }));
+    return squares;
   }
 
-  function invalidNumbers() {
+  function valueUnique(value, _, array) {
+    return array.filter((num) => num === value).length === 1;
+  }
+
+  function validSolution() {
     let rows = data;
     let columns = getColumns();
     let squares = getSquares();
 
-    return false;
+    let combindedStructs = rows.concat(columns).concat(squares);
+
+    return combindedStructs.every((struct) => struct.every(valueUnique))
   }
 
   //   Public methods
   // -------------------------
   return {
     isValid: function() {
-      if (invalidBoard() || invalidNumbers()) return false;
-      return true;
+      if (validValues() && validBoardDimensions() && validSolution()) {
+        return true;
+      }
+      return false;
     }
   };
 };
@@ -123,7 +134,7 @@ var badSudoku2 = new Sudoku([
   [1]
 ]);
 
-console.log(goodSudoku1.isValid() === true);
-console.log(goodSudoku2.isValid() === true);
-console.log(badSudoku1.isValid() === false);
-console.log(badSudoku2.isValid() === false);
+console.log(goodSudoku1.isValid());
+console.log(goodSudoku2.isValid());
+console.log(badSudoku1.isValid());
+console.log(badSudoku2.isValid());
