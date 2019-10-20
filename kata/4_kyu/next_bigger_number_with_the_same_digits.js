@@ -25,42 +25,57 @@ Array:
   - join and coerce to number
 
 = A
-iterate digits starting from the back (reverse)
-  loop (for length of arr)
-  - if currN is > digits[i]
-    - switch their places
-      - find smallest number combination of any digits before hand
-      - break
-  - else continue
+traverse digits from right to left (reverse)
+  - find index of digit where previous digit is greater
+    - if none return -1
+  - find index of digit to the right of found digit that is greater than digit but smallest possible
+  - swap digits at these indexes
+  - sort digits from the first found index to the end
+  - return digits
 
-  if newNum === inputNum return -1;
-  return newNum
+
+
 */
+function getIndexOfFirstDigitGreaterThanNext(digits) {
+  return digits.findIndex((digit, index) => digits[index - 1] > digit);
+}
+
+function getIndexOfSmallestGreaterDigit(digits, threshold) {
+  let smallestGreater = Infinity;
+  let smallestGreaterIndex;
+  let currentDigit;
+
+  for(let i = 0; i < digits.length; i += 1) {
+    currentDigit = digits[i];
+    if (currentDigit > threshold && currentDigit < smallestGreater) {
+      smallestGreater = currentDigit;
+      smallestGreaterIndex = i;
+    }
+  }
+
+  return smallestGreaterIndex;
+}
 
 function nextBigger(n){
   let digits = n.toString().split('').map((strDigit) => Number(strDigit));
   digits.reverse();
-  let nexBigger;
 
-  digits.forEach(function (digit, index) {
-    let nextSmallerDigitIndex = digits.slice(index).findIndex((a) => a < digit);
-    if (nextSmallerDigitIndex !== -1) {
-      let temp = digits[index];
-      digits[index] = digits[nextSmallerDigitIndex];
-      digits[nextSmallerDigitIndex] = temp;
-
-      /*
-      Now that some of the number has been switched -
-      find the smallest number from the digits occurring in the
-      digits array before the switched out number.
-      */
-      
-    }
-  });
+  swapIndex1 = getIndexOfFirstDigitGreaterThanNext(digits);
+  if (swapIndex1 === -1) return -1;
+  swapIndex2 = getIndexOfSmallestGreaterDigit(digits.slice(0, swapIndex1), digits[swapIndex1]);
   
-  digits = Number(digits.reverse().join(''));
-  if (digits === n) return -1;
-  return digits;
+  let temp = digits[swapIndex1];
+  digits[swapIndex1] = digits[swapIndex2];
+  digits[swapIndex2] = temp;
+
+  let leftPart = digits.slice(0, swapIndex1);
+  let rightPart = digits.slice(swapIndex1);
+
+  leftPart.sort((a, b) => a > b ? -1 : 1);
+    
+  let nextBigger = leftPart.concat(rightPart);
+  
+  return Number(nextBigger.reverse().join(''));
 }
 
 // 2087 => 2780 => 2708
@@ -78,5 +93,10 @@ console.log(nextBigger(9)) // -1
 console.log(nextBigger(111)) // -1
 console.log(nextBigger(531)) // -1
 console.log(nextBigger(565)) // 655
-console.log(nextBigger(5654)) // 6554
+console.log(nextBigger(5654)) // 6455
 console.log(nextBigger(3241)) // 3412
+
+// 459583 => 483559
+
+// 59884848483559
+// 59884848534589
